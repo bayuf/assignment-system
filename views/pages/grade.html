@@ -1,0 +1,36 @@
+{{ define "grade" }} {{ template "base" . }}
+
+<main class="container">
+  <h2>Daftar Tugas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Judul</th>
+        <th>Deskripsi</th>
+        <th>Deadline</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Submissions }}
+      <tr>
+        <td>{{.CourseName}} - {{.AssignmentTitle}}</td>
+        <td>{{.AssignmentDec}}</td>
+        <td>{{.Deadline}}</td>
+        <td>
+          <form action="/user/grade-detail" method="GET" style="margin: 0">
+            <input
+              type="hidden"
+              name="assignment_id"
+              value="{{.AssignmentID}}"
+            />
+            <button type="submit">Lihat Mahasiswa</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</main>
+
+{{ template "footer" . }} {{ template "lastfooter" . }} {{ end }}

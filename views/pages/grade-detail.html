@@ -1,0 +1,42 @@
+{{ define "grade-detail" }} {{ template "base" . }}
+
+<main class="container">
+  <h2>Daftar Mahasiwa</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Judul</th>
+        <th>Nama Mahasiswa</th>
+        <th>Deadline</th>
+        <th>Submitted At</th>
+        <th>File Tugas</th>
+        <th>Grade</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Submissions }}
+      <tr>
+        <td>{{.CourseName}} - {{.AssignmentTitle}}</td>
+        <td>{{.StudentName}}</td>
+        <td>{{.Deadline}}</td>
+        <td>{{.Submitted_At}}</td>
+        <td>{{.URL_File}}</td>
+        <td>{{.Grade}}</td>
+        <td>
+          <form action="/user/grade-form" method="GET" style="margin: 0">
+            <input
+              type="hidden"
+              name="assignment_id"
+              value="{{.AssignmentID}}"
+            />
+            <button type="submit">Edit Nilai</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</main>
+
+{{ template "footer" . }} {{ template "lastfooter" . }} {{ end }}

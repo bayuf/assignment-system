@@ -1,0 +1,15 @@
+{{ define "nav" }}
+<nav>
+  <div class="container">
+    <h1>Manajemen Tugas</h1>
+    <ul class="nav-menu">
+      {{if eq .Role "student"}}
+      <li><a href="/user/assignments">Tugas</a></li>
+      {{else if eq .Role "lecturer"}}
+      <li><a href="/user/grade">Penilaian</a></li>
+      {{end}}
+      <li><a href="/user/logout">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+{{ end }}
