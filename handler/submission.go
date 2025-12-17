@@ -63,3 +63,38 @@ func (submissionHandler SubmissionHandler) ListByLectureId(w http.ResponseWriter
 	}
 
 }
+
+func (submissionHandler SubmissionHandler) GetGradeDetail(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	assignmentId := r.URL.Query().Get("assignment_id")
+	assignmentIdInt, err := strconv.Atoi(assignmentId)
+	if err != nil {
+		return
+	}
+
+	submissions, err := submissionHandler.SubmissionService.GradeDetailByAssignment(assignmentIdInt)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	role := ""
+
+	roleCookie, err := r.Cookie("role")
+	if err != nil {
+		return
+	} else {
+		role = roleCookie.Value
+	}
+
+	data := SubmissionViewData{
+		Role:        role,
+		Submissions: submissions,
+	}
+
+	if err := submissionHandler.Templates.ExecuteTemplate(w, "grade_detail", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}

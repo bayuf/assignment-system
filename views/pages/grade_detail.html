@@ -1,7 +1,8 @@
-{{ define "grade-detail" }} {{ template "base" . }}
+{{ define "grade_detail" }} {{ template "base" . }}
 
 <main class="container">
   <h2>Daftar Mahasiwa</h2>
+  {{if .Submissions}}
   <table>
     <thead>
       <tr>
@@ -17,12 +18,12 @@
     <tbody>
       {{range .Submissions }}
       <tr>
-        <td>{{.CourseName}} - {{.AssignmentTitle}}</td>
+        <td>{{.AssignmentTitle}}</td>
         <td>{{.StudentName}}</td>
         <td>{{.Deadline}}</td>
-        <td>{{.Submitted_At}}</td>
-        <td>{{.URL_File}}</td>
-        <td>{{.Grade}}</td>
+        <td>{{.SubmittedAt}}</td>
+        <td><a href="{{.FileURL}}">Lihat File</a></td>
+        <td>{{with .Grade}} {{.}} {{else}} 0 {{end}}</td>
         <td>
           <form action="/user/grade-form" method="GET" style="margin: 0">
             <input
@@ -37,6 +38,9 @@
       {{end}}
     </tbody>
   </table>
+  {{else}}
+  <p style="text-align: center">data tidak ada</p>
+  {{end}}
 </main>
 
 {{ template "footer" . }} {{ template "lastfooter" . }} {{ end }}

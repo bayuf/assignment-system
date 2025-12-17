@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"session-17/database"
 	"session-17/model"
@@ -15,6 +16,7 @@ type SubmissionRepo interface {
 	UpdateGrade(sub *model.Submission) error
 
 	FindAllByLectureId(id int) ([]model.Submission, error)
+	GradeDetailByAssignment(id int) ([]model.Submission, error)
 }
 
 type submissionRepo struct {
@@ -23,6 +25,53 @@ type submissionRepo struct {
 
 func NewSubmissionRepo(db database.PgxIface) SubmissionRepo {
 	return &submissionRepo{db}
+}
+
+func (r *submissionRepo) GradeDetailByAssignment(assignmentId int) ([]model.Submission, error) {
+
+	query := `
+		SELECT a.id, a.created_at, a.updated_at, 
+a.title, u.name, a.deadline,s.submitted_at, s.file_Url, s.grade
+		FROM assignments a
+		LEFT JOIN submissions s ON a.id=s.assignment_id 
+		LEFT JOIN users u ON u.id=s.student_id
+		WHERE a.id=$1 AND a.deleted_at IS NULL
+		ORDER BY a.deadline ASC
+	`
+	rows, err := r.db.Query(context.Background(), query, assignmentId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var submissionsDetail []model.Submission
+	var studentName sql.NullString
+	var submittedAt sql.NullTime
+	var fileUrl sql.NullString
+	for rows.Next() {
+		var a model.Submission
+		err := rows.Scan(
+			&a.AssignmentID, &a.Model.CreatedAt, &a.Model.UpdatedAt,
+			&a.AssignmentTitle, &studentName, &a.Deadline, &submittedAt, &fileUrl, &a.Grade,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if studentName.Valid {
+			a.StudentName = studentName.String
+		}
+		if submittedAt.Valid {
+			a.SubmittedAt = submittedAt.Time
+		}
+		if fileUrl.Valid {
+			a.FileURL = fileUrl.String
+		}
+
+		submissionsDetail = append(submissionsDetail, a)
+	}
+
+	return submissionsDetail, nil
 }
 
 func (r *submissionRepo) FindAllByLectureId(id int) ([]model.Submission, error) {

@@ -12,6 +12,7 @@ type SubmissionService interface {
 	GradeSubmission(studentID, assignmentID int, grade float64) error
 
 	FindAllByLectureId(id int) ([]model.Submission, error)
+	GradeDetailByAssignment(assignmentId int) ([]model.Submission, error)
 }
 
 type submissionService struct {
@@ -22,6 +23,22 @@ func NewSubmissionService(subRepo repository.Repository) SubmissionService {
 	return &submissionService{
 		Repo: subRepo,
 	}
+}
+
+func (submissionService *submissionService) GradeDetailByAssignment(assignmentId int) ([]model.Submission, error) {
+
+	submissions, err := submissionService.Repo.SubmissionRepo.GradeDetailByAssignment(assignmentId)
+	if err != nil {
+		return []model.Submission{}, err
+	}
+
+	// check name is not null
+	for _, a := range submissions {
+		if a.StudentName == "" {
+			return []model.Submission{}, nil
+		}
+	}
+	return submissions, nil
 }
 
 func (submissionService *submissionService) FindAllByLectureId(id int) ([]model.Submission, error) {

@@ -25,6 +25,7 @@ func NewRouter(handler handler.Handler) *chi.Mux {
 		r.Get("/success-submit", handler.AssignmentHandler.SuccessSubmit)
 		r.Post("/submit-assignment", handler.AssignmentHandler.SubmitAssignment)
 		r.Get("/grade", handler.SubmissionHandler.ListByLectureId)
+		r.Get("/grade_detail", handler.SubmissionHandler.GetGradeDetail)
 		r.Get("/logout", handler.HandlerAuth.LogoutView)
 	})
 	r.Get("/page401", handler.HandlerMenu.PageUnauthorized)
